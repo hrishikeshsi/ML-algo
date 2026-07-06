@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chef Mystico - Guess the Dish</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    @keyframes pulse-slow {
+        0%, 100% { opacity: 0.2; }
+        50% { opacity: 0.35; }
+    }
+    .pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+
+    .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 10px 14px; }
+    .typing-indicator span {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #a78bfa; display: inline-block;
+        animation: blink-dots 1.4s infinite ease-in-out;
+    }
+    .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink-dots {
+        0% { opacity: 0.2; transform: scale(0.8); }
+        20% { opacity: 1; transform: scale(1.2); }
+        100% { opacity: 0.2; transform: scale(0.8); }
+    }
+
+    /* PREMIUM ANIMATIONS START HERE */
+
+    /* 1. Lifelike Character Breathing & Blinking */
+    @keyframes breathe {
+        0%, 100% { transform: scaleY(1) translateY(0); }
+        50% { transform: scaleY(1.03) translateY(-2px); }
+    }
+    .breathe-active {
+        animation: breathe 3s ease-in-out infinite;
+        transform-origin: 100px 180px; /* Base of the character */
+    }
+
+    @keyframes eye-blink {
+        0%, 94%, 98%, 100% { transform: scaleY(1); }
+        95%, 99% { transform: scaleY(0.1); } /* Realistic double blink */
+    }
+    .blink-active {
+        animation: eye-blink 6s infinite;
+        transform-origin: center;
+    }
+
+    /* 2. Rotating Magical Aura */
+    @keyframes rotate-aura {
+        from { transform: rotate(0deg) scale(1); opacity: 0.6; }
+        50% { transform: rotate(180deg) scale(1.1); opacity: 0.9; }
+        to { transform: rotate(360deg) scale(1); opacity: 0.6; }
+    }
+    .aura-spin {
+        animation: rotate-aura 8s linear infinite;
+        transform-origin: 100px 100px;
+    }
+
+    /* 3. Wand Waving (Smoother, snappy physics) */
+    @keyframes wand-wave {
+        0%, 100% { transform: rotate(0deg); }
+        20% { transform: rotate(-50deg); }
+        40% { transform: rotate(40deg); }
+        60% { transform: rotate(-20deg); }
+        80% { transform: rotate(10deg); }
+    }
+    .wand-active {
+        animation: wand-wave 0.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    }
+
+    /* 4. Explosive Food Spawning (Physics Pop-in) */
+    @keyframes pop-in-out {
+        0% { transform: translateY(40px) scale(0) rotate(-20deg); opacity: 0; filter: blur(8px); }
+        30% { transform: translateY(-10px) scale(1.4) rotate(10deg); opacity: 1; filter: blur(0px); }
+        50% { transform: translateY(0px) scale(1.2) rotate(0deg); opacity: 1; filter: blur(0px); }
+        80% { transform: translateY(-20px) scale(1.3); opacity: 1; filter: blur(0px); }
+        100% { transform: translateY(-60px) scale(0.5); opacity: 0; filter: blur(4px); }
+    }
+
+    /* 5. Shooting Star Sparkles */
+    @keyframes shoot-1 { 0% { transform: translate(0,0) scale(0) rotate(0); opacity:1;} 100% { transform: translate(-70px, -90px) scale(1.5) rotate(180deg); opacity:0;} }
+    @keyframes shoot-2 { 0% { transform: translate(0,0) scale(0) rotate(0); opacity:1;} 100% { transform: translate(70px, -80px) scale(1.5) rotate(-180deg); opacity:0;} }
+    @keyframes shoot-3 { 0% { transform: translate(0,0) scale(0) rotate(0); opacity:1;} 100% { transform: translate(10px, -120px) scale(2) rotate(90deg); opacity:0;} }
+
+    @keyframes gentle-bounce {
+        0%, 100% { transform: translateY(0); filter: drop-shadow(0 10px 8px rgba(0,0,0,0.2)); }
+        50% { transform: translateY(-15px); filter: drop-shadow(0 20px 8px rgba(0,0,0,0.1)); }
+    }
+    .thinking-active {
+        animation: gentle-bounce 2.5s ease-in-out infinite;
+    }
+
+    #chat-log::-webkit-scrollbar { width: 6px; }
+    #chat-log::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 999px; }
+
+    /* 6. Message entrance */
+    @keyframes message-in {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 7. Score pulse on point gain */
+    @keyframes score-pop {
+        0% { transform: scale(1); }
+        40% { transform: scale(1.4); color: #16a34a; }
+        100% { transform: scale(1); }
+    }
+    .score-pop { animation: score-pop 0.5s ease; }
+
+    /* 8. Confetti celebration */
+    @keyframes confetti-fall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(115vh) rotate(360deg); opacity: 0; }
+    }
+</style>
+</head>
+<body class="bg-gray-900 h-screen flex items-center justify-center p-4 font-sans text-gray-800">
+
+    <!-- App Container (Side by Side on Desktop) -->
+    <div class="w-full max-w-5xl h-full max-h-[800px] flex flex-col md:flex-row bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-700">
+
+        <!-- Left Side: Magician Chef Area (ENDLESS LOOP) -->
+        <div class="md:w-5/12 bg-gradient-to-b from-indigo-900 via-purple-900 to-gray-900 flex flex-col items-center justify-center relative p-6 text-white overflow-hidden shrink-0">
+            <!-- Magical background glow -->
+            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-400 via-transparent to-transparent pulse-slow"></div>
+
+            <!-- SVG Character (Chef Mystico) & Magic Visuals -->
+            <div class="relative z-10 w-48 h-48 mb-6 drop-shadow-2xl">
+
+                <!-- Dynamic Magic Visual Container (Moved above the hat/brain!) -->
+                <div id="magic-visual" class="absolute -top-24 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex items-center justify-center w-40 h-40">
+                    <!-- Food items will be injected here via JavaScript -->
+                </div>
+
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                    <!-- Spinning Aura -->
+                    <circle cx="100" cy="100" r="90" fill="url(#aura)" class="aura-spin" />
+                    <defs>
+                        <radialGradient id="aura" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#fde047" stop-opacity="0.9"/>
+                            <stop offset="60%" stop-color="#8b5cf6" stop-opacity="0.4"/>
+                            <stop offset="100%" stop-color="#4c1d95" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Character Body (Groups everything that breathes) -->
+                    <g class="breathe-active">
+                        <!-- Cape -->
+                        <path d="M 50 120 Q 20 180 30 200 L 170 200 Q 180 180 150 120 Z" fill="#581c87" />
+                        <path d="M 60 120 L 140 120 L 100 180 Z" fill="#3b0764" />
+                        <!-- Face -->
+                        <circle cx="100" cy="90" r="35" fill="#fde68a" />
+                        <!-- Eyes (With blinking class) -->
+                        <g class="blink-active" style="transform-origin: 100px 85px;">
+                            <circle cx="85" cy="85" r="5" fill="#1e1b4b" />
+                            <circle cx="115" cy="85" r="5" fill="#1e1b4b" />
+                        </g>
+                        <!-- Mustache -->
+                        <path d="M 75 100 Q 100 90 125 100 Q 110 115 100 105 Q 90 115 75 100 Z" fill="#1e1b4b" />
+                        <!-- Chef Hat -->
+                        <path d="M 70 55 C 60 30 80 10 100 15 C 120 10 140 30 130 55 C 145 65 140 85 125 80 L 75 80 C 60 85 55 65 70 55 Z" fill="#ffffff" />
+
+                        <!-- Hand & Wand Group -->
+                        <g id="magic-wand" style="transform-origin: 155px 140px;">
+                            <circle cx="155" cy="140" r="12" fill="#fde68a" />
+                            <rect x="152" y="70" width="6" height="70" fill="#92400e" rx="3" transform="rotate(15 155 105)" />
+                            <!-- Magic Star -->
+                            <g transform="rotate(15 170 70)">
+                                <polygon points="170,45 175,60 190,65 175,70 170,85 165,70 150,65 165,60" fill="#fef08a" />
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+
+            <h1 class="text-2xl font-bold tracking-wide mb-2">Chef Mystico</h1>
+            <p id="mystic-status" class="text-sm text-indigo-200 italic text-center h-10 transition-opacity duration-300 opacity-100">Awakening the culinary spirits...</p>
+        </div>
+
+        <!-- Right Side: Guess the Dish Game -->
+        <div class="md:w-7/12 flex flex-col h-full bg-gray-50">
+            <div class="p-4 border-b border-gray-200 bg-white">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <h2 id="game-title" class="font-bold text-lg text-gray-800">🍽️ Guess the Dish</h2>
+                        <p id="game-subtitle" class="text-xs text-gray-500">Chef Mystico gives clues — type your guess below!</p>
+                    </div>
+                    <div class="text-right text-xs text-gray-500 shrink-0 ml-3">
+                        <div>You: <span id="score-you" class="font-bold text-purple-700">0</span></div>
+                        <div>Chef: <span id="score-chef" class="font-bold text-indigo-700">0</span></div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button id="mode-user-guess" class="flex-1 text-sm font-semibold py-1.5 rounded-full transition active:scale-95">🧑 You Guess</button>
+                    <button id="mode-chef-guess" class="flex-1 text-sm font-semibold py-1.5 rounded-full transition active:scale-95">🔮 Chef Guesses</button>
+                </div>
+            </div>
+
+            <div id="chat-log" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+
+            <div class="p-4 border-t border-gray-200 bg-white">
+                <div id="input-row" class="flex gap-2">
+                    <input id="guess-input" type="text" placeholder="Type your guess..." autocomplete="off"
+                        class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                    <button id="send-btn" class="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-5 py-2 font-semibold transition active:scale-95">Guess</button>
+                    <button id="skip-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-4 py-2 font-semibold transition active:scale-95">Skip</button>
+                </div>
+                <div id="answer-row" class="hidden flex flex-wrap gap-2">
+                    <button id="answer-yes" class="flex-1 min-w-[100px] bg-emerald-500 hover:bg-emerald-600 text-white rounded-full px-4 py-2 font-semibold transition active:scale-95">✅ Yes</button>
+                    <button id="answer-no" class="flex-1 min-w-[100px] bg-rose-500 hover:bg-rose-600 text-white rounded-full px-4 py-2 font-semibold transition active:scale-95">❌ No</button>
+                    <button id="answer-dontknow" class="flex-1 min-w-[100px] bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-full px-4 py-2 font-semibold transition active:scale-95">🤷 Not sure</button>
+                    <button id="give-up-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full px-3 py-2 font-semibold transition active:scale-95" title="Give up">🏳️</button>
+                </div>
+                <div id="reveal-row" class="hidden flex gap-2">
+                    <input id="reveal-input" type="text" placeholder="Type what you were thinking of..." autocomplete="off"
+                        class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                    <button id="reveal-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-5 py-2 font-semibold transition active:scale-95">Tell Chef</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ENDLESS LEFT-SIDE ANIMATION LOOP
+        // ==========================================
+        const magicWand = document.getElementById('magic-wand');
+        const mysticStatus = document.getElementById('mystic-status');
+        const magicVisual = document.getElementById('magic-visual');
+
+        const magicalFoods = [
+            { emoji: "🍔", name: "Burger" },
+            { emoji: "🍕", name: "Pizza" },
+            { emoji: "🍜", name: "Ramen" },
+            { emoji: "🍰", name: "Cake" },
+            { emoji: "🌮", name: "Tacos" },
+            { emoji: "🍣", name: "Sushi" },
+            { emoji: "🍩", name: "Donut" }
+        ];
+        let foodIndex = 0;
+
+        function runEndlessChefAnimation() {
+            // PHASE 1: Thinking (3.5 Seconds)
+            mysticStatus.style.opacity = 0;
+            setTimeout(() => {
+                mysticStatus.innerText = "Hmm... pondering the culinary cosmos...";
+                mysticStatus.style.opacity = 1;
+            }, 300);
+
+            magicWand.classList.remove('wand-active');
+            magicVisual.innerHTML = '<span class="text-5xl opacity-80 thinking-active">💭</span>';
+
+            setTimeout(() => {
+                // PHASE 2: Explosive Magic Creation (2.8 Seconds)
+                const currentFood = magicalFoods[foodIndex % magicalFoods.length];
+
+                mysticStatus.style.opacity = 0;
+                setTimeout(() => {
+                    mysticStatus.innerText = `Conjuring a magical ${currentFood.name}!`;
+                    mysticStatus.style.opacity = 1;
+                }, 300);
+
+                magicWand.classList.add('wand-active');
+
+                // Advanced DOM injection for high-level physics explosion
+                magicVisual.innerHTML = `
+                    <div class="relative w-full h-full flex items-center justify-center">
+                        <span class="text-7xl absolute z-50 drop-shadow-2xl" style="animation: pop-in-out 2.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">${currentFood.emoji}</span>
+                        <span class="text-3xl absolute z-40 drop-shadow-lg" style="animation: shoot-1 1.2s ease-out forwards;">✨</span>
+                        <span class="text-3xl absolute z-40 drop-shadow-lg" style="animation: shoot-2 1.4s ease-out forwards;">🌟</span>
+                        <span class="text-4xl absolute z-40 drop-shadow-lg" style="animation: shoot-3 1.0s ease-out forwards;">✨</span>
+                    </div>
+                `;
+
+                foodIndex++;
+
+                // Loop back to Phase 1 after the food creation finishes
+                setTimeout(() => {
+                    runEndlessChefAnimation();
+                }, 2800);
+
+            }, 3500);
+        }
+
+        // ==========================================
+        // GUESS-THE-DISH GAME (both directions)
+        // ==========================================
+        const dishes = [
+            { name: "Pizza", emoji: "🍕",
+                clues: ["I'm round and usually cut into triangle slices.", "I hail from Italy, and Naples claims to have invented me.", "I'm topped with tomato sauce, cheese, and whatever you like."],
+                sweet: false, bread: true, hot: true, asian: false, handheld: true, breakfast: false, round: true, sliced: true, noodles: false },
+            { name: "Sushi", emoji: "🍣",
+                clues: ["I'm a Japanese dish that's often rolled in seaweed.", "Vinegared rice is my signature ingredient.", "Raw fish is a common topping or filling for me."],
+                sweet: false, bread: false, hot: false, asian: true, handheld: false, breakfast: false, round: false, sliced: false, noodles: false },
+            { name: "Tacos", emoji: "🌮",
+                clues: ["I'm a Mexican favorite, folded in half.", "My shell can be soft or crunchy.", "Fillings like beef, salsa, and cheese live inside me."],
+                sweet: false, bread: true, hot: true, asian: false, handheld: true, breakfast: false, round: false, sliced: false, noodles: false },
+            { name: "Ramen", emoji: "🍜",
+                clues: ["I'm a Japanese noodle soup.", "My broth can be miso, shoyu, or tonkotsu.", "A soft-boiled egg often floats on top of me."],
+                sweet: false, bread: false, hot: true, asian: true, handheld: false, breakfast: false, round: false, sliced: false, noodles: true },
+            { name: "Burger", emoji: "🍔",
+                clues: ["I'm made of a patty stacked between two buns.", "Cheese, lettuce, and pickles are common toppings for me.", "I'm a classic American fast-food staple."],
+                sweet: false, bread: true, hot: true, asian: false, handheld: true, breakfast: false, round: true, sliced: false, noodles: false },
+            { name: "Cake", emoji: "🍰",
+                clues: ["I'm a sweet baked treat, often served at celebrations.", "I'm usually covered in frosting or icing.", "Candles get stuck in me on birthdays."],
+                sweet: true, bread: false, hot: false, asian: false, handheld: false, breakfast: false, round: true, sliced: true, noodles: false },
+            { name: "Donut", emoji: "🍩",
+                clues: ["I'm a fried, ring-shaped pastry.", "I'm often glazed or covered in sprinkles.", "I'm a popular breakfast pastry with a hole in the middle."],
+                sweet: true, bread: true, hot: false, asian: false, handheld: true, breakfast: true, round: true, sliced: false, noodles: false },
+            { name: "Pancakes", emoji: "🥞",
+                clues: ["I'm flat, round, and stacked in a tall pile.", "Maple syrup is my best friend.", "I'm cooked on a griddle for breakfast."],
+                sweet: true, bread: false, hot: true, asian: false, handheld: false, breakfast: true, round: true, sliced: false, noodles: false },
+            { name: "Ice Cream", emoji: "🍦",
+                clues: ["I'm frozen, sweet, and served in a cone or a cup.", "I come in flavors like vanilla, chocolate, and strawberry.", "I melt quickly on a hot day."],
+                sweet: true, bread: false, hot: false, asian: false, handheld: false, breakfast: false, round: false, sliced: false, noodles: false },
+            { name: "Curry", emoji: "🍛",
+                clues: ["I'm a spiced sauce dish popular in South Asia.", "I'm usually served over rice.", "Coconut milk or yogurt often gives me a creamy texture."],
+                sweet: false, bread: false, hot: true, asian: true, handheld: false, breakfast: false, round: false, sliced: false, noodles: false }
+        ];
+
+        const questions = [
+            { key: 'sweet', text: "Is it sweet, or considered a dessert?" },
+            { key: 'bread', text: "Does it involve bread, dough, a bun, or a tortilla?" },
+            { key: 'hot', text: "Is it usually eaten hot?" },
+            { key: 'asian', text: "Does it originate from Asian cuisine?" },
+            { key: 'handheld', text: "Do you typically eat it with your hands (no fork or spoon)?" },
+            { key: 'breakfast', text: "Is it commonly eaten for breakfast?" },
+            { key: 'round', text: "Is it round or disc-shaped?" },
+            { key: 'sliced', text: "Is it typically cut into slices before eating?" },
+            { key: 'noodles', text: "Does it contain noodles?" }
+        ];
+
+        const chatLog = document.getElementById('chat-log');
+        const scoreYouEl = document.getElementById('score-you');
+        const scoreChefEl = document.getElementById('score-chef');
+        const guessInput = document.getElementById('guess-input');
+        const sendBtn = document.getElementById('send-btn');
+        const skipBtn = document.getElementById('skip-btn');
+        const revealInput = document.getElementById('reveal-input');
+        const revealBtn = document.getElementById('reveal-btn');
+        const modeUserBtn = document.getElementById('mode-user-guess');
+        const modeChefBtn = document.getElementById('mode-chef-guess');
+        const answerDontKnowBtn = document.getElementById('answer-dontknow');
+        const gameSubtitleEl = document.getElementById('game-subtitle');
+
+        let mode = 'user-guess';
+        let scoreYou = 0;
+        let scoreChef = 0;
+
+        // --- Mode "You Guess": Chef gives clues, you guess ---
+        let currentDish = null;
+        let clueIndex = 0;
+        let recentDishes = [];
+        let accepting = true;
+
+        // --- Mode "Chef Guesses": you think of a dish, chef asks questions ---
+        let cgCandidates = [];
+        let cgAskedKeys = [];
+        let cgCurrentQuestion = null;
+        let cgCurrentGuess = null;
+        let cgGuessQueue = [];
+        let cgPhase = 'idle'; // 'question' | 'guessing' | 'reveal'
+
+        const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        // ==========================================
+        // GAME API — everything in here runs locally today.
+        // Swap each function body for a fetch() to your ML/DL backend
+        // later; every call site above already awaits these, so nothing
+        // else in the UI needs to change.
+        // ==========================================
+        const gameAPI = {
+            async pickDish(excludeNames) {
+                await wait(400);
+                // Later: const res = await fetch('/api/pick-dish', {...}); return res.json();
+                let choice;
+                do {
+                    choice = dishes[Math.floor(Math.random() * dishes.length)];
+                } while (dishes.length > 1 && excludeNames.includes(choice.name));
+                return choice;
+            },
+            async getClue(dish, clueIndex) {
+                await wait(700);
+                // Later: const res = await fetch(`/api/clue?dish=${dish.name}&index=${clueIndex}`); return (await res.json()).clue;
+                return dish.clues[clueIndex] || null;
+            },
+            async checkGuess(dish, guessText) {
+                await wait(500);
+                // Later: swap for a fuzzy/semantic match from your model instead of exact string compare.
+                return guessText.trim().toLowerCase() === dish.name.toLowerCase();
+            },
+            async getNextQuestion(candidates, askedKeys) {
+                await wait(450);
+                // Later: hand candidates + askedKeys to your model and let it choose the most informative question.
+                return questions.find(q => !askedKeys.includes(q.key) &&
+                    candidates.some(d => d[q.key]) && candidates.some(d => !d[q.key])) || null;
+            },
+            async filterCandidates(candidates, key, value) {
+                await wait(300);
+                const filtered = candidates.filter(d => d[key] === value);
+                return filtered.length > 0 ? filtered : candidates;
+            },
+            async makeGuess(guessQueue) {
+                await wait(600);
+                // Later: replace the queue-based heuristic with your model's top prediction.
+                return guessQueue[0] || null;
+            },
+            async submitReveal(revealText) {
+                await wait(300);
+                // Later: send `revealText` to your backend so your model can learn the dish it missed.
+                return true;
+            }
+        };
+
+        function addMessage(sender, text) {
+            const isChef = sender === 'chef';
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex items-end gap-2 ${isChef ? 'justify-start' : 'justify-end'}`;
+            wrapper.style.animation = 'message-in 0.25s ease';
+            const avatar = isChef
+                ? `<div class="w-7 h-7 rounded-full bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center text-sm shrink-0">🧙</div>`
+                : '';
+            const bubble = `<div class="max-w-[70%] px-4 py-2 rounded-2xl text-sm leading-relaxed ${isChef ? 'bg-purple-100 text-purple-900 rounded-bl-sm' : 'bg-purple-600 text-white rounded-br-sm'}">${text}</div>`;
+            wrapper.innerHTML = isChef ? avatar + bubble : bubble;
+            chatLog.appendChild(wrapper);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function showTyping() {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex items-end gap-2 justify-start';
+            wrapper.style.animation = 'message-in 0.2s ease';
+            wrapper.innerHTML = `
+                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center text-sm shrink-0">🧙</div>
+                <div class="bg-purple-100 rounded-2xl rounded-bl-sm">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>`;
+            chatLog.appendChild(wrapper);
+            chatLog.scrollTop = chatLog.scrollHeight;
+            return wrapper;
+        }
+
+        function pulseScore(el) {
+            el.classList.remove('score-pop');
+            void el.offsetWidth; // restart animation
+            el.classList.add('score-pop');
+        }
+
+        function celebrate() {
+            const container = document.createElement('div');
+            container.className = 'fixed inset-0 pointer-events-none z-50 overflow-hidden';
+            document.body.appendChild(container);
+            const emojis = ['✨', '🎉', '⭐', '🌟'];
+            for (let i = 0; i < 16; i++) {
+                const piece = document.createElement('span');
+                piece.textContent = emojis[i % emojis.length];
+                piece.className = 'absolute text-2xl';
+                piece.style.left = `${(i / 16) * 100 + (i % 3)}vw`;
+                piece.style.top = '-5vh';
+                piece.style.animation = `confetti-fall ${1.6 + (i % 5) * 0.2}s ease-in forwards`;
+                piece.style.animationDelay = `${(i % 4) * 0.1}s`;
+                container.appendChild(piece);
+            }
+            setTimeout(() => container.remove(), 3000);
+        }
+
+        function showRow(name) {
+            document.getElementById('input-row').classList.toggle('hidden', name !== 'input');
+            document.getElementById('answer-row').classList.toggle('hidden', name !== 'answer');
+            document.getElementById('reveal-row').classList.toggle('hidden', name !== 'reveal');
+        }
+
+        function setControlsDisabled(disabled) {
+            const rowId = mode === 'user-guess' ? 'input-row' : (cgPhase === 'reveal' ? 'reveal-row' : 'answer-row');
+            const row = document.getElementById(rowId);
+            row.classList.toggle('opacity-50', disabled);
+            row.classList.toggle('pointer-events-none', disabled);
+        }
+
+        function updateModeButtons() {
+            modeUserBtn.classList.toggle('bg-purple-600', mode === 'user-guess');
+            modeUserBtn.classList.toggle('text-white', mode === 'user-guess');
+            modeUserBtn.classList.toggle('bg-gray-200', mode !== 'user-guess');
+            modeUserBtn.classList.toggle('text-gray-700', mode !== 'user-guess');
+
+            modeChefBtn.classList.toggle('bg-purple-600', mode === 'chef-guess');
+            modeChefBtn.classList.toggle('text-white', mode === 'chef-guess');
+            modeChefBtn.classList.toggle('bg-gray-200', mode !== 'chef-guess');
+            modeChefBtn.classList.toggle('text-gray-700', mode !== 'chef-guess');
+        }
+
+        function setMode(newMode) {
+            if (mode === newMode) return;
+            mode = newMode;
+            updateModeButtons();
+            chatLog.innerHTML = '';
+            if (mode === 'user-guess') {
+                document.getElementById('game-title').innerText = '🍽️ Guess the Dish';
+                gameSubtitleEl.innerText = 'Chef Mystico gives clues — type your guess below!';
+                showRow('input');
+                addMessage('chef', "Back to my favorite game! I'll give you clues to a mystery dish — guess it to earn points!");
+                startRound();
+            } else {
+                document.getElementById('game-title').innerText = '🔮 Chef Reads Your Mind';
+                showRow('answer');
+                addMessage('chef', "Think of one dish from my secret menu, hold it in your mind... and answer my questions honestly!");
+                startChefGuessRound();
+            }
+        }
+
+        // ----- You Guess logic -----
+        async function startRound() {
+            setControlsDisabled(true);
+            currentDish = await gameAPI.pickDish(recentDishes);
+            recentDishes.push(currentDish.name);
+            if (recentDishes.length > Math.min(3, dishes.length - 1)) recentDishes.shift();
+            clueIndex = 0;
+            await giveClue();
+        }
+
+        async function giveClue() {
+            accepting = false;
+            setControlsDisabled(true);
+            const typing = showTyping();
+            const clue = await gameAPI.getClue(currentDish, clueIndex);
+            typing.remove();
+            addMessage('chef', clue ? `Clue ${clueIndex + 1}: ${clue}` : "No more clues left — take your best guess!");
+            clueIndex++;
+            accepting = true;
+            setControlsDisabled(false);
+            guessInput.focus();
+        }
+
+        function revealAnswer(prefix) {
+            addMessage('chef', `${prefix} It was <strong>${currentDish.name} ${currentDish.emoji}</strong>!`);
+        }
+
+        async function handleGuess() {
+            if (mode !== 'user-guess' || !accepting) return;
+            const value = guessInput.value.trim();
+            if (!value) return;
+            addMessage('user', value);
+            guessInput.value = '';
+            accepting = false;
+            setControlsDisabled(true);
+
+            const typing = showTyping();
+            const correct = await gameAPI.checkGuess(currentDish, value);
+            typing.remove();
+
+            if (correct) {
+                scoreYou++;
+                scoreYouEl.innerText = scoreYou;
+                pulseScore(scoreYouEl);
+                celebrate();
+                addMessage('chef', `✨ Magnifique! That's correct — ${currentDish.name} ${currentDish.emoji}! Your score is now ${scoreYou}.`);
+                setTimeout(startRound, 1400);
+            } else if (clueIndex < currentDish.clues.length) {
+                addMessage('chef', "Not quite... let me conjure another clue.");
+                setTimeout(giveClue, 500);
+            } else {
+                revealAnswer("Alas, the magic fades.");
+                setTimeout(startRound, 1600);
+            }
+        }
+
+        // ----- Chef Guesses logic -----
+        function updateChefSubtitle() {
+            if (mode !== 'chef-guess') return;
+            if (cgPhase === 'question') {
+                gameSubtitleEl.innerText = `🔎 Narrowing it down… ${cgCandidates.length} dish${cgCandidates.length === 1 ? '' : 'es'} still possible`;
+            } else if (cgPhase === 'guessing') {
+                gameSubtitleEl.innerText = '🎯 Time to guess!';
+            } else if (cgPhase === 'reveal') {
+                gameSubtitleEl.innerText = '🏳️ Stumped — tell Chef what it was';
+            }
+        }
+
+        async function startChefGuessRound() {
+            cgCandidates = dishes.slice();
+            cgAskedKeys = [];
+            cgPhase = 'question';
+            answerDontKnowBtn.classList.remove('hidden');
+            updateChefSubtitle();
+            await askNextQuestion();
+        }
+
+        async function askNextQuestion() {
+            if (cgCandidates.length <= 1) { await beginGuessing(); return; }
+            setControlsDisabled(true);
+            const q = await gameAPI.getNextQuestion(cgCandidates, cgAskedKeys);
+            if (!q) { await beginGuessing(); return; }
+            cgAskedKeys.push(q.key);
+            cgCurrentQuestion = q;
+            const typing = showTyping();
+            await wait(350);
+            typing.remove();
+            addMessage('chef', q.text);
+            updateChefSubtitle();
+            setControlsDisabled(false);
+        }
+
+        async function answerQuestion(value) {
+            if (mode !== 'chef-guess' || cgPhase !== 'question') return;
+            addMessage('user', value === true ? 'Yes' : value === false ? 'No' : 'Not sure');
+            setControlsDisabled(true);
+            if (value !== null) {
+                cgCandidates = await gameAPI.filterCandidates(cgCandidates, cgCurrentQuestion.key, value);
+            }
+            await askNextQuestion();
+        }
+
+        async function beginGuessing() {
+            cgPhase = 'guessing';
+            answerDontKnowBtn.classList.add('hidden');
+            updateChefSubtitle();
+            cgGuessQueue = cgCandidates.length ? cgCandidates.slice() : dishes.slice();
+            await makeNextGuess();
+        }
+
+        async function makeNextGuess() {
+            setControlsDisabled(true);
+            const guess = await gameAPI.makeGuess(cgGuessQueue);
+            if (!guess) { await giveUpAndReveal(); return; }
+            cgGuessQueue.shift();
+            cgCurrentGuess = guess;
+            const typing = showTyping();
+            await wait(450);
+            typing.remove();
+            addMessage('chef', `I sense it... is it <strong>${guess.name} ${guess.emoji}</strong>?`);
+            setControlsDisabled(false);
+        }
+
+        async function answerGuess(isCorrect) {
+            if (mode !== 'chef-guess' || cgPhase !== 'guessing') return;
+            addMessage('user', isCorrect ? 'Yes!' : 'No');
+            setControlsDisabled(true);
+            if (isCorrect) {
+                scoreChef++;
+                scoreChefEl.innerText = scoreChef;
+                pulseScore(scoreChefEl);
+                celebrate();
+                const typing = showTyping();
+                await wait(450);
+                typing.remove();
+                addMessage('chef', `✨ Ha! I knew it was ${cgCurrentGuess.name} ${cgCurrentGuess.emoji}! My score is now ${scoreChef}.`);
+                setTimeout(startChefGuessRound, 1600);
+            } else {
+                await makeNextGuess();
+            }
+        }
+
+        async function giveUpAndReveal() {
+            cgPhase = 'reveal';
+            updateChefSubtitle();
+            addMessage('chef', "Hmm, you've truly stumped me! What was it?");
+            showRow('reveal');
+            setControlsDisabled(false);
+        }
+
+        async function handleReveal() {
+            const value = revealInput.value.trim();
+            if (!value) return;
+            addMessage('user', value);
+            revealInput.value = '';
+            setControlsDisabled(true);
+            const typing = showTyping();
+            await gameAPI.submitReveal(value);
+            typing.remove();
+            addMessage('chef', `Ah, ${value}! I'll sharpen my crystal ball for next time.`);
+            showRow('answer');
+            setTimeout(startChefGuessRound, 1200);
+        }
+
+        // ----- Wiring -----
+        sendBtn.addEventListener('click', handleGuess);
+        guessInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleGuess(); });
+        skipBtn.addEventListener('click', () => {
+            if (mode !== 'user-guess' || !currentDish) return;
+            revealAnswer("Skipped!");
+            setTimeout(startRound, 900);
+        });
+
+        document.getElementById('answer-yes').addEventListener('click', () => {
+            if (cgPhase === 'question') answerQuestion(true);
+            else if (cgPhase === 'guessing') answerGuess(true);
+        });
+        document.getElementById('answer-no').addEventListener('click', () => {
+            if (cgPhase === 'question') answerQuestion(false);
+            else if (cgPhase === 'guessing') answerGuess(false);
+        });
+        answerDontKnowBtn.addEventListener('click', () => answerQuestion(null));
+        document.getElementById('give-up-btn').addEventListener('click', () => {
+            if (mode === 'chef-guess' && cgPhase !== 'reveal') giveUpAndReveal();
+        });
+        revealBtn.addEventListener('click', handleReveal);
+        revealInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleReveal(); });
+
+        modeUserBtn.addEventListener('click', () => setMode('user-guess'));
+        modeChefBtn.addEventListener('click', () => setMode('chef-guess'));
+
+        // Start the endless loop as soon as the page loads
+        runEndlessChefAnimation();
+        updateModeButtons();
+        showRow('input');
+        addMessage('chef', "Greetings, mortal! I am Chef Mystico. Pick a mode above — I can quiz you, or you can quiz me!");
+        startRound();
+    </script>
+</body>
+</html>
