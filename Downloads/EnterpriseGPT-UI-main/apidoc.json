@@ -1,0 +1,336 @@
+{
+	"info": {
+		"_postman_id": "f23abd1e-32d6-4112-a1dd-a714a872728a",
+		"name": "API for other UI Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48294122",
+		"_collection_link": "https://devansh-shah-6babf802-266287.postman.co/workspace/Devansh-Shah-iAI's-Workspace~d625d3b2-35d1-46ce-8097-f3cfb6410407/collection/48294122-f23abd1e-32d6-4112-a1dd-a714a872728a?source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Get Access Token API",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsondata = pm.response.json();",
+							"",
+							"pm.environment.set(\"access_token\", jsondata.access_token);",
+							"pm.environment.set(\"bearerToken\", jsondata.access_token);",
+							"",
+							"pm.environment.set(\"refresh_token\", jsondata.refresh_token);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apikey",
+						"value": "{{apikey}}"
+					},
+					{
+						"key": "username",
+						"value": "{{username}}"
+					},
+					{
+						"key": "password",
+						"value": "{{password}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://{{domain}}/accesstoken/{{tenant}}",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"accesstoken",
+						"{{tenant}}"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'https://api.intellectseecapps.com/accesstoken/idx' \\\n--header 'apikey: magicplatform.23bB6ff2e5934be38dccda223fFddc86' \\\n--header 'username: idx.dev.service.user@intellectdesign.com' \\\n--header 'password: IdxUser@123!' \\\n--header 'Content-Type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Conversation",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "apikey",
+						"value": "{{apikey}}"
+					},
+					{
+						"key": "content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-platform-workspaceid",
+						"value": "{{workspace_id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"conversation_name\": \"\",\n    \"asset_version_id\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/magicplatform/v1/genai/conversation/create",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"magicplatform",
+						"v1",
+						"genai",
+						"conversation",
+						"create"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'https://api.intellectseecapps.com/magicplatform/v1/genai/conversation/create' \\\n--header 'apikey: magicplatform.23bB6ff2e5934be38dccda223fFddc86' \\\n--header 'authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItazRLQ3p4dXVWODZmLXEzV1UzNlFFR2RoRWVNOGdsWE8zbExKaEM5cUlVIn0.eyJleHAiOjE3NTk4NDYxNDYsImlhdCI6MTc1OTgxNzM0NiwiYXV0aF90aW1lIjoxNzU5ODE3MzI2LCJqdGkiOiJlYTJlOTIwZC00MDliLTRkODktYTI1OS0wNDE3YWNlNTQ5MDIiLCJpc3MiOiJodHRwczovL2lhbS5pbnRlbGxlY3RzZWVjYXBwcy5jb20vYXV0aC9yZWFsbXMvaWR4IiwiYXVkIjpbImZhYnJpYyIsImFjY291bnQiXSwic3ViIjoiZmNhMmIxNzYtY2Y3YS00ZTRkLTgxYjAtOTc0ZmQyNzA3Y2NkIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoibWFnaWNwbGF0Zm9ybSIsIm5vbmNlIjoiZWM5NmYxNzctYWRjMi00YzY0LWJjZDQtZmZkNThhMGMyZGI1Iiwic2Vzc2lvbl9zdGF0ZSI6ImMxOTU4ZDQzLTgxOTYtNDU3Ni04MGZhLThmMTc5NDg0NmQ1NSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL3VzLmludGVsbGVjdHNlZWNhcHBzLmNvbSIsImh0dHBzOi8vaWR4LmludGVsbGVjdHNlZWNhcHBzLmNvbSIsImh0dHBzOi8vbWFnaWNwbGF0Zm9ybS5pbnRlbGxlY3RzZWVjYXBwcy5jb20iLCJodHRwOi8vbG9jYWxob3N0OjE4NDEiLCJodHRwczovL2xvY2FsaG9zdDoxODQxIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsImRlZmF1bHQtcm9sZXMtaWR4IiwidW1hX2F1dGhvcml6YXRpb24iLCJNQUdJQ19QTEFURk9STV9BRE1JTiIsIkFQUF9VU0VSIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsibWFnaWNwbGF0Zm9ybSI6eyJyb2xlcyI6WyJNQUdJQ19QTEFURk9STV9BRE1JTiIsIkFQUF9VU0VSIl19LCJmYWJyaWMiOnsicm9sZXMiOlsiTUFHSUNfUExBVEZPUk1fQURNSU4iLCJBUFBfVVNFUiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQiLCJzaWQiOiJjMTk1OGQ0My04MTk2LTQ1NzYtODBmYS04ZjE3OTQ4NDZkNTUiLCJ1c2VyUm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWlkeCIsInVtYV9hdXRob3JpemF0aW9uIiwiTUFHSUNfUExBVEZPUk1fQURNSU4iLCJBUFBfVVNFUiJdLCJtb25nby11c2VySWQiOiJpZHgua2FtZXNoIiwicHJvZmlsZUlkIjoiaWR4LXVzZXItOTg1NTc2NDMxNyIsInRlbmFudElkIjoiaWR4IiwiTEFTVF9OQU1FIjoiUyIsIkZJUlNUX05BTUUiOiJLYW1lc2h3YXJhbiJ9.OGUutRoWjvlvNnIp9CVuYhUmvXHSzhbE0D-tTb1iiVAlCNgsyUKNJhq0Qpa_aXplg5NmMlKZXGNyDwkZ4vQ5djPwWgyte_Dsh4RCoJL_DP9OCawVjoPSXJYOEd78O7HxfDH0pGhEP4xpcKR7nzqd0NLkSOVTJD_1WxYDT03YdgZjaBIKvXJ_fv0NIbYIdLtv74JhPCQJeijcWyPNb_0T7aHM1HzaZg1jBLREbB_HHynglD_hm_lQlsnwJeTuy9LO0JeN9cchNMInUDYtTXZ7TysZOUXtdSS6uqH0qUvh3oSAfLBxOqSYexL_p4rkMFPFuIjx89ZOkfebHCsbdBOHDg' \\\n--header 'content-type: application/json' \\\n--header 'x-platform-workspaceid: 6cdf20fb-b715-41b4-9b81-0d451f7378ab' \\\n--data '{\n    \"conversation_name\": \"HI\",\n    \"asset_version_id\": \"ede8ceb6-a21c-47fe-af64-f3a9ab05029a\"\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "File Upload API",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "apikey",
+						"value": "{{apikey}}"
+					},
+					{
+						"key": "app",
+						"value": "magicplatform"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "files",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "doc_source",
+							"value": "UPLOAD",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://{{domain}}/magicplatform/v1/genai/conversation/fileupload?conversation_id={{conversation_id}}",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"magicplatform",
+						"v1",
+						"genai",
+						"conversation",
+						"fileupload"
+					],
+					"query": [
+						{
+							"key": "conversation_id",
+							"value": "{{conversation_id}}"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl --location 'https://api.intellectseecapps.com/magicplatform/v1/genai/conversation/fileupload?conversation_id=68e4e1aa4fdd2d3830af04fa' \\\n--header 'accept: application/json, text/plain, */*' \\\n--header 'apikey: magicplatform.23bB6ff2e5934be38dccda223fFddc86' \\\n--header 'app: magicplatform' \\\n--header 'authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItazRLQ3p4dXVWODZmLXEzV1UzNlFFR2RoRWVNOGdsWE8zbExKaEM5cUlVIn0.eyJleHAiOjE3NTk4NTk3MzMsImlhdCI6MTc1OTgzMDkzMywiYXV0aF90aW1lIjoxNzU5ODE3MzI2LCJqdGkiOiI3OGNiMDc0NS05OTM3LTQ5YzktYjA3Yy1hZWFiMGY3ZDY1NjciLCJpc3MiOiJodHRwczovL2lhbS5pbnRlbGxlY3RzZWVjYXBwcy5jb20vYXV0aC9yZWFsbXMvaWR4IiwiYXVkIjpbImZhYnJpYyIsImFjY291bnQiXSwic3ViIjoiZmNhMmIxNzYtY2Y3YS00ZTRkLTgxYjAtOTc0ZmQyNzA3Y2NkIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoibWFnaWNwbGF0Zm9ybSIsIm5vbmNlIjoiYTA1ZDE5Y2QtNzcwZi00MmU3LTljODMtNjM0MDY4NDc2OWMyIiwic2Vzc2lvbl9zdGF0ZSI6ImMxOTU4ZDQzLTgxOTYtNDU3Ni04MGZhLThmMTc5NDg0NmQ1NSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL3VzLmludGVsbGVjdHNlZWNhcHBzLmNvbSIsImh0dHBzOi8vaWR4LmludGVsbGVjdHNlZWNhcHBzLmNvbSIsImh0dHBzOi8vbWFnaWNwbGF0Zm9ybS5pbnRlbGxlY3RzZWVjYXBwcy5jb20iLCJodHRwOi8vbG9jYWxob3N0OjE4NDEiLCJodHRwczovL2xvY2FsaG9zdDoxODQxIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsImRlZmF1bHQtcm9sZXMtaWR4IiwidW1hX2F1dGhvcml6YXRpb24iLCJNQUdJQ19QTEFURk9STV9BRE1JTiIsIkFQUF9VU0VSIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsibWFnaWNwbGF0Zm9ybSI6eyJyb2xlcyI6WyJNQUdJQ19QTEFURk9STV9BRE1JTiIsIkFQUF9VU0VSIl19LCJmYWJyaWMiOnsicm9sZXMiOlsiTUFHSUNfUExBVEZPUk1fQURNSU4iLCJBUFBfVVNFUiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQiLCJzaWQiOiJjMTk1OGQ0My04MTk2LTQ1NzYtODBmYS04ZjE3OTQ4NDZkNTUiLCJ1c2VyUm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWlkeCIsInVtYV9hdXRob3JpemF0aW9uIiwiTUFHSUNfUExBVEZPUk1fQURNSU4iLCJBUFBfVVNFUiJdLCJtb25nby11c2VySWQiOiJpZHgua2FtZXNoIiwicHJvZmlsZUlkIjoiaWR4LXVzZXItOTg1NTc2NDMxNyIsInRlbmFudElkIjoiaWR4IiwiTEFTVF9OQU1FIjoiUyIsIkZJUlNUX05BTUUiOiJLYW1lc2h3YXJhbiJ9.BnzoS0lL5EgX6cz0ft2pAqfmMPC-ML6vezuVgcNhWgpdFWeeiZw39KgHMgODNGapJe9apS5JSz67tbCRgecZV5496zRw0FelvtQqaQJBxpBfzZfGw2mWCv4Qban9xDZWvDouFRUoren5PA7RSac64dXN3W5OqAH9uVjkv_7kphHYFXUz6STn3pZyNMmcnqFNxc-PHC7CUp5Siw3Jej-xfNoLR8tNNvJzG3PUFHnQcBpMhuCalskZO-r6-u0b7h8RYfmzPeEFw1LCD945fQsPIov3twANNUhsQq1pGEtxwCeb57ecRUHnWGU_tDr9lOIK_M_rFW3AJlo8lTjap9wYnw' \\\n--form 'files=@\"/path/to/file\"' \\\n--form 'doc_source=\"UPLOAD\"'"
+			},
+			"response": []
+		},
+		{
+			"name": "File Status Check",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "apikey",
+						"value": "{{apikey}}"
+					},
+					{
+						"key": "refreshtoken",
+						"value": "{{refresh_token}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{domain}}/magicplatform/v1/genai/conversation/details/{{conversation_id}}",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"magicplatform",
+						"v1",
+						"genai",
+						"conversation",
+						"details",
+						"{{conversation_id}}"
+					]
+				},
+				"description": "Generated from cURL: curl 'https://api.intellectqacloud.com/magicplatform/v1/genai/conversation/details/68e63e71477636da1f7e61b8' \\\n  -H 'accept: application/json, text/plain, */*' \\\n  -H 'accept-language: en-US,en;q=0.9' \\\n  -H 'access-control-expose-headers: apikey, authorization, refreshtoken' \\\n  -H 'apikey: magicplatform.6e985612C96b454Ea46b95068EE3C8cb' \\\n  -H 'authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDQ2dyWlY5SXFreXk3Z2R0c3otdTMtY3Q4Z1pmd2x2dEdJRmlGQVUwbFFNIn0.eyJleHAiOjE3NTk5MjMxNjYsImlhdCI6MTc1OTkxOTU2NiwiYXV0aF90aW1lIjoxNzU5OTE5NTQ5LCJqdGkiOiI5Njg2NjE3Zi0yNTkwLTQ5ZGQtYWYxZi01OWMyMmZhOGUyMmEiLCJpc3MiOiJodHRwczovL2lhbS5pbnRlbGxlY3RxYWNsb3VkLmNvbS9hdXRoL3JlYWxtcy9pZHgiLCJhdWQiOlsicGZtb2JpbGUiLCJmYWJyaWMiXSwic3ViIjoiZGYxOGJhMmMtYzUyMy00ZmMzLWEzZGItODlkMDcxNjgzNTFiIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoibWFnaWNwbGF0Zm9ybSIsIm5vbmNlIjoiMzE1M2Y3YjMtOTRkNy00OTAxLThmMjctODM5YWMxNjYxODE2Iiwic2Vzc2lvbl9zdGF0ZSI6IjQ1YmY0OTk1LTUzMDEtNGU1OS05MjRmLWZlMGIwNzMzYTYwNyIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL2lkeC5pbnRlbGxlY3RxYWNsb3VkLmNvbSIsImh0dHBzOi8vdXMuaW50ZWxsZWN0cWFjbG91ZC5jb20vcHVycGxlZmFicmljIiwiaHR0cHM6Ly9tYWdpY3BsYXRmb3JtLmludGVsbGVjdHFhY2xvdWQuY29tIiwiaHR0cDovL2xvY2FsaG9zdDoxODQxIiwiaHR0cHM6Ly9sb2NhbGhvc3Q6MTg0MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiQVBQX1VTRVIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJtYWdpY3BsYXRmb3JtIjp7InJvbGVzIjpbIkFQUF9VU0VSIiwiTUFHSUNQTEFURk9STV9TRVJWSUNFX1VTRVIiXX0sInBmbW9iaWxlIjp7InJvbGVzIjpbIlRFTkFOVF9BRE1JTiIsIkFQUF9VU0VSIl19LCJmYWJyaWMiOnsicm9sZXMiOlsiVEVOQU5UX0FETUlOIl19fSwic2NvcGUiOiJvcGVuaWQiLCJzaWQiOiI0NWJmNDk5NS01MzAxLTRlNTktOTI0Zi1mZTBiMDczM2E2MDciLCJ1c2VyUm9sZXMiOlsiQVBQX1VTRVIiXSwibW9uZ28tdXNlcklkIjoiaWR4LnFhLnNlcnZpY2UudXNlckBpbnRlbGxlY3RkZXNpZ24uY29tIiwicHJvZmlsZUlkIjoiaWR4LXVzZXItMzA1NzQ4MjMxNCIsInRlbmFudElkIjoiaWR4IiwiTEFTVF9OQU1FIjoiU2VydmljZSBVc2VyIiwiRklSU1RfTkFNRSI6IklEWCJ9.TGuFxCcD2dhd-Qu80ZmbXP2AxYaCqnubzxixZ7r8bobCof7RbIdhPhmQX2do_OaQ1uQ-AZDDSufpKgwBocKy_A0SH-7okF_vp9Ff08b6W0VfX-vV_hNnqTh3KwTju14JCvq8waz9tBWHCi55kUr1NmHlhVAi3t1XaVGJ_-d85Gzm8K-Os9ox1GF0XBI93IXT7E88jOV247CDzE22UAIUYKvN36z9O3qtPlYJ9CHdjmJzDAsERDDHvigeum_yYyu0MF-g9oynVT7YchZosTRcuY-MZMzojtpIg4aJ7crWhpNxhj59ZnUvRalXbXJdlxw7CeDkuvvNP09nYpEpOzLXtA' \\\n  -H 'origin: https://us.intellectqacloud.com' \\\n  -H 'priority: u=1, i' \\\n  -H 'refreshtoken: eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlYjAxMDhhNC00N2EwLTQwZjUtYjk2ZS02OWE0MjRhOTY1NGEifQ.eyJleHAiOjE3NTk5MjMzNDYsImlhdCI6MTc1OTkxOTU2NiwianRpIjoiNTZlN2VlMDUtZjNjZS00MmE0LTg4ZGYtYmY0ZGU1Y2ZhM2RmIiwiaXNzIjoiaHR0cHM6Ly9pYW0uaW50ZWxsZWN0cWFjbG91ZC5jb20vYXV0aC9yZWFsbXMvaWR4IiwiYXVkIjoiaHR0cHM6Ly9pYW0uaW50ZWxsZWN0cWFjbG91ZC5jb20vYXV0aC9yZWFsbXMvaWR4Iiwic3ViIjoiZGYxOGJhMmMtYzUyMy00ZmMzLWEzZGItODlkMDcxNjgzNTFiIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6Im1hZ2ljcGxhdGZvcm0iLCJub25jZSI6IjMxNTNmN2IzLTk0ZDctNDkwMS04ZjI3LTgzOWFjMTY2MTgxNiIsInNlc3Npb25fc3RhdGUiOiI0NWJmNDk5NS01MzAxLTRlNTktOTI0Zi1mZTBiMDczM2E2MDciLCJzY29wZSI6Im9wZW5pZCIsInNpZCI6IjQ1YmY0OTk1LTUzMDEtNGU1OS05MjRmLWZlMGIwNzMzYTYwNyJ9.f5GRtjB20QjtIn9VsFv4zt-ttc0ijDPqUXaOBf4bk1c' \\\n  -H 'sec-ch-ua: \"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"' \\\n  -H 'sec-ch-ua-mobile: ?0' \\\n  -H 'sec-ch-ua-platform: \"Linux\"' \\\n  -H 'sec-fetch-dest: empty' \\\n  -H 'sec-fetch-mode: cors' \\\n  -H 'sec-fetch-site: same-site' \\\n  -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' \\\n  -H 'x-platform-workspaceid: e9897fa6-86e7-4449-9018-eb81bfe7cd97'"
+			},
+			"response": []
+		},
+		{
+			"name": "Add Message To Conversation",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "apikey",
+						"value": "{{apikey}}"
+					},
+					{
+						"key": "content-type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"conversation_id\":\"\",\"query\":\"\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/magicplatform/v1/genai/conversation/addmessage/stream",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"magicplatform",
+						"v1",
+						"genai",
+						"conversation",
+						"addmessage",
+						"stream"
+					]
+				},
+				"description": "Generated from cURL: curl 'https://api.intellectseeccloud.com/magicplatform/v1/genai/conversation/addmessage/stream' \\\n  -H 'accept: text/event-stream, text/event-stream' \\\n  -H 'accept-language: en-US,en;q=0.9' \\\n  -H 'apikey: magicplatform.5e81f24494814a759b528603c5286D10' \\\n  -H 'authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ2VWJySjZOc0tYR2FzeHBhMERGQWJYTnh6MzFiTFIxU2hHV0tYYXJhTzAwIn0.eyJleHAiOjE3NTk5MTkyNzgsImlhdCI6MTc1OTkxNTY3OCwiYXV0aF90aW1lIjoxNzU5OTE1NjcyLCJqdGkiOiJlMWQ5NzM2MS0zMzQyLTRiZDgtYTRkNC03ODU0ZGJhNjE5MTgiLCJpc3MiOiJodHRwczovL2lhbS5pbnRlbGxlY3RzZWVjY2xvdWQuY29tL2F1dGgvcmVhbG1zL3BmbXBjYmFzZSIsImF1ZCI6ImZhYnJpYyIsInN1YiI6IjJlMmYxMmU1LTNlMTctNDEwNC1iNjM4LWVmMzg1MjJjZThlNCIsInR5cCI6IkJlYXJlciIsImF6cCI6Im1hZ2ljcGxhdGZvcm0iLCJub25jZSI6ImFmMzA1ZjYyLWVjMjMtNGY2My1iNmU1LWM5NmJiYWIwYTY2MiIsInNlc3Npb25fc3RhdGUiOiJlOGE1YTg5OC0yNTE1LTQ1YzAtYjFiNi04NTZhOGY3MjE5MjYiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovL2xvY2FsaG9zdDoxODQxIiwiaHR0cHM6Ly9tYWdpY3BsYXRmb3JtLmludGVsbGVjdHNlZWNjbG91ZC5jb20iLCJodHRwczovL3VzLmludGVsbGVjdHNlZWNjbG91ZC5jb20vcHVycGxlZmFicmljIiwiaHR0cHM6Ly9sb2NhbGhvc3Q6MTg0MSIsImh0dHBzOi8vcGZtcGNiYXNlLmludGVsbGVjdHNlZWNjbG91ZC5jb20iXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIlRFTkFOVF9BRE1JTiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7Im1hZ2ljcGxhdGZvcm0iOnsicm9sZXMiOlsiVEVOQU5UX0FETUlOIl19LCJmYWJyaWMiOnsicm9sZXMiOlsiVEVOQU5UX0FETUlOIl19fSwic2NvcGUiOiJvcGVuaWQiLCJzaWQiOiJlOGE1YTg5OC0yNTE1LTQ1YzAtYjFiNi04NTZhOGY3MjE5MjYiLCJ1c2VyUm9sZXMiOlsiVEVOQU5UX0FETUlOIl0sIm1vbmdvLXVzZXJJZCI6InBmbXBjYmFzZS5wcm9kLnNlcnZpY2UudXNlciIsInByb2ZpbGVJZCI6InBmbXBjYmFzZS11c2VyLTgzNDQxMzU1NTIiLCJ0ZW5hbnRJZCI6InBmbXBjYmFzZSIsIkxBU1RfTkFNRSI6InVzZXIiLCJGSVJTVF9OQU1FIjoic2VydmljZSJ9.exFWLsNurNuxVLnSrLWLL5pmRlb12iArq6LSdKWh69mY4XHG9NDYlUTigm-EJ9b3oYJyql1kQr2kXKh1JW7jR73yZoTCGAH_cY7_2GkAWxorE-yhafPj2aj7kXkOualblHuXCQM8QY1n_zlFglS-VY9iXm70kt1vz5NVJRcWevDaaN1RJ7qM-TTKXqvn2HvpreAEzq1t-smUGvvRSR1821a31FI22OE8y1GZtfqiZHGaH16uYYnPml0i5V0ru8GBqz-GO2Zlww06ajVFaQveXDj9CdA3z2Jk9sPYktj7H61--727B-qMXLw8u1Mzl5oxsWvVXHjQ3ev5vmr9MHM5WQ' \\\n  -H 'content-type: application/json' \\\n  -H 'origin: https://us.intellectseeccloud.com' \\\n  -H 'priority: u=1, i' \\\n  -H 'sec-ch-ua: \"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"' \\\n  -H 'sec-ch-ua-mobile: ?0' \\\n  -H 'sec-ch-ua-platform: \"Linux\"' \\\n  -H 'sec-fetch-dest: empty' \\\n  -H 'sec-fetch-mode: cors' \\\n  -H 'sec-fetch-site: same-site' \\\n  -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' \\\n  --data-raw '{\"conversation_id\":\"68e5ecf2663ce5acbea483ca\",\"query\":\"summarize this file\"}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Message Response",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "apikey",
+						"value": "{{apikey}}",
+						"type": "text"
+					},
+					{
+						"key": "refreshtoken",
+						"value": "{{refresh_token}}"
+					},
+					{
+						"key": "x-platform-workspaceid",
+						"value": "{{workspace_id}}"
+					}
+				],
+				"url": {
+					"raw": "https://{{domain}}/magicplatform/v1/genai/conversation/response/{{conversation_id}}/:message_id",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"magicplatform",
+						"v1",
+						"genai",
+						"conversation",
+						"response",
+						"{{conversation_id}}",
+						":message_id"
+					],
+					"variable": [
+						{
+							"key": "message_id",
+							"value": ""
+						}
+					]
+				},
+				"description": "Generated from cURL: curl --location --globoff 'https://api.intellectseecapps.com/magicplatform/v1/genai/conversation/response/652cd071194725e7bfdd4a4d/{{message_id}}' \\\n--header 'accept: application/json, text/plain, */*' \\\n--header 'accept-language: en-US,en;q=0.9' \\\n--header 'access-control-expose-headers: apikey, authorization, refreshtoken' \\\n--header 'apikey: magicplatform.23bB6ff2e5934be38dccda223fFddc86' \\\n--header 'authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItazRLQ3p4dXVWODZmLXEzV1UzNlFFR2RoRWVNOGdsWE8zbExKaEM5cUlVIn0.eyJleHAiOjE3NTk4NDYxNDYsImlhdCI6MTc1OTgxNzM0NiwiYXV0aF90aW1lIjoxNzU5ODE3MzI2LCJqdGkiOiJlYTJlOTIwZC00MDliLTRkODktYTI1OS0wNDE3YWNlNTQ5MDIiLCJpc3MiOiJodHRwczovL2lhbS5pbnRlbGxlY3RzZWVjYXBwcy5jb20vYXV0aC9yZWFsbXMvaWR4IiwiYXVkIjpbImZhYnJpYyIsImFjY291bnQiXSwic3ViIjoiZmNhMmIxNzYtY2Y3YS00ZTRkLTgxYjAtOTc0ZmQyNzA3Y2NkIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoibWFnaWNwbGF0Zm9ybSIsIm5vbmNlIjoiZWM5NmYxNzctYWRjMi00YzY0LWJjZDQtZmZkNThhMGMyZGI1Iiwic2Vzc2lvbl9zdGF0ZSI6ImMxOTU4ZDQzLTgxOTYtNDU3Ni04MGZhLThmMTc5NDg0NmQ1NSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL3VzLmludGVsbGVjdHNlZWNhcHBzLmNvbSIsImh0dHBzOi8vaWR4LmludGVsbGVjdHNlZWNhcHBzLmNvbSIsImh0dHBzOi8vbWFnaWNwbGF0Zm9ybS5pbnRlbGxlY3RzZWVjYXBwcy5jb20iLCJodHRwOi8vbG9jYWxob3N0OjE4NDEiLCJodHRwczovL2xvY2FsaG9zdDoxODQxIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsImRlZmF1bHQtcm9sZXMtaWR4IiwidW1hX2F1dGhvcml6YXRpb24iLCJNQUdJQ19QTEFURk9STV9BRE1JTiIsIkFQUF9VU0VSIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsibWFnaWNwbGF0Zm9ybSI6eyJyb2xlcyI6WyJNQUdJQ19QTEFURk9STV9BRE1JTiIsIkFQUF9VU0VSIl19LCJmYWJyaWMiOnsicm9sZXMiOlsiTUFHSUNfUExBVEZPUk1fQURNSU4iLCJBUFBfVVNFUiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQiLCJzaWQiOiJjMTk1OGQ0My04MTk2LTQ1NzYtODBmYS04ZjE3OTQ4NDZkNTUiLCJ1c2VyUm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWlkeCIsInVtYV9hdXRob3JpemF0aW9uIiwiTUFHSUNfUExBVEZPUk1fQURNSU4iLCJBUFBfVVNFUiJdLCJtb25nby11c2VySWQiOiJpZHgua2FtZXNoIiwicHJvZmlsZUlkIjoiaWR4LXVzZXItOTg1NTc2NDMxNyIsInRlbmFudElkIjoiaWR4IiwiTEFTVF9OQU1FIjoiUyIsIkZJUlNUX05BTUUiOiJLYW1lc2h3YXJhbiJ9.OGUutRoWjvlvNnIp9CVuYhUmvXHSzhbE0D-tTb1iiVAlCNgsyUKNJhq0Qpa_aXplg5NmMlKZXGNyDwkZ4vQ5djPwWgyte_Dsh4RCoJL_DP9OCawVjoPSXJYOEd78O7HxfDH0pGhEP4xpcKR7nzqd0NLkSOVTJD_1WxYDT03YdgZjaBIKvXJ_fv0NIbYIdLtv74JhPCQJeijcWyPNb_0T7aHM1HzaZg1jBLREbB_HHynglD_hm_lQlsnwJeTuy9LO0JeN9cchNMInUDYtTXZ7TysZOUXtdSS6uqH0qUvh3oSAfLBxOqSYexL_p4rkMFPFuIjx89ZOkfebHCsbdBOHDg' \\\n--header 'origin: https://us.intellectseecapps.com' \\\n--header 'priority: u=1, i' \\\n--header 'refreshtoken: eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJiZDBhMDU5Zi1iOGJjLTRiYzUtYTQzNy1kYWZiODllNjVkMjAifQ.eyJleHAiOjE3NTk4NDc5NDYsImlhdCI6MTc1OTgxNzM0NiwianRpIjoiYzgyYTI2YmItZGQwYS00ZTI2LWJmNTYtZDg2MmJmYjA2OTVmIiwiaXNzIjoiaHR0cHM6Ly9pYW0uaW50ZWxsZWN0c2VlY2FwcHMuY29tL2F1dGgvcmVhbG1zL2lkeCIsImF1ZCI6Imh0dHBzOi8vaWFtLmludGVsbGVjdHNlZWNhcHBzLmNvbS9hdXRoL3JlYWxtcy9pZHgiLCJzdWIiOiJmY2EyYjE3Ni1jZjdhLTRlNGQtODFiMC05NzRmZDI3MDdjY2QiLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoibWFnaWNwbGF0Zm9ybSIsIm5vbmNlIjoiZWM5NmYxNzctYWRjMi00YzY0LWJjZDQtZmZkNThhMGMyZGI1Iiwic2Vzc2lvbl9zdGF0ZSI6ImMxOTU4ZDQzLTgxOTYtNDU3Ni04MGZhLThmMTc5NDg0NmQ1NSIsInNjb3BlIjoib3BlbmlkIiwic2lkIjoiYzE5NThkNDMtODE5Ni00NTc2LTgwZmEtOGYxNzk0ODQ2ZDU1In0.pl35Lu66toHQjuJaYCHgyl-3LNwvWvCJXER6I1vt3uY' \\\n--header 'sec-ch-ua: \"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"' \\\n--header 'sec-ch-ua-mobile: ?0' \\\n--header 'sec-ch-ua-platform: \"Linux\"' \\\n--header 'sec-fetch-dest: empty' \\\n--header 'sec-fetch-mode: cors' \\\n--header 'sec-fetch-site: same-site' \\\n--header 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' \\\n--header 'x-platform-workspaceid: 6cdf20fb-b715-41b4-9b81-0d451f7378ab'"
+			},
+			"response": []
+		}
+	]
+}
